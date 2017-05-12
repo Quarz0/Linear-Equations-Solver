@@ -5,6 +5,14 @@ def calcPrecision(ea):
     return ['Exact' if k == 0 else int(-1 * math.log10(2.0 * k)) for k in ea]
 
 
+def castMatrixToFloat(matrix):
+    for i in xrange(len(matrix)):
+        if type(matrix[i]) == type([]):
+            for j in xrange(len(matrix[i])):
+                matrix[i][j] = float(matrix[i][j])
+        else:
+            matrix[i] = float(matrix[i])
+
 def partial_pivot(n, k, A, o):
     p = k
     for i in xrange(k + 1, n):
