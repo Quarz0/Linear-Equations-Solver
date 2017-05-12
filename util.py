@@ -13,6 +13,7 @@ def castMatrixToFloat(matrix):
         else:
             matrix[i] = float(matrix[i])
 
+
 def partial_pivot(n, k, A, o):
     p = k
     for i in xrange(k + 1, n):

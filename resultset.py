@@ -7,7 +7,6 @@ class ResultSet(object):
         self.numIters = iters
         self.roots = roots
 
-
     def getSolution(self):
         return self.solution
 

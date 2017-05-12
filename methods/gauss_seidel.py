@@ -1,7 +1,8 @@
 import timeit
+
+from resultset import ResultSet
 from table import Table
 from util import *
-from resultset import ResultSet
 
 
 def gauss_seidel(A, B, X0, iterations=50, eps=0.00001):
@@ -43,7 +44,6 @@ def gauss_seidel(A, B, X0, iterations=50, eps=0.00001):
         tables.append(Table("Gauss-Seidel", ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i]))
 
     return ResultSet(tables, X_new, calcPrecision(ea_rel), executionTime, t + 2, roots)
-
 
 # A = [[12, 3, -5], [1, 5, 3], [3, 7, 13]]
 # C = [1, 0, 1]

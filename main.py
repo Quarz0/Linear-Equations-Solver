@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 import sys
-from PyQt4 import QtGui, uic
+from PyQt4 import QtGui, QtCore, uic
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+
+from resultset import ResultSet
 
 plt.rc('text', usetex=True)
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
@@ -18,6 +20,9 @@ class NewNavigationToolbar(NavigationToolbar):
 
 
 class MyApp(QtGui.QMainWindow, Ui_MainWindow):
+    tempResultSets = []
+    tempTables = []
+
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
@@ -39,6 +44,70 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.toolbar._actions['pan'].trigger()
         self.toolbar._actions['pan'].setVisible(False)
         self.toolbar._actions['zoom'].setVisible(False)
+
+    def drawResultSet(self, resultSet):
+        assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
+        self.tempResultSets.append(resultSet)
+        self.variablesComboBox.addItems(list(resultSet.getTables().keys()).sort())  # move to @Solve button
+        qWidget = self.drawTable(resultSet.getIdentifier())
+        self.updateTables()  # move to @Solve button
+        self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
+
+        # self.drawSolution(resultSet.getSolution())
+        # self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
+        # self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
+        # self.plotError(resultSet.getErrors())
+        # self.plotRoot(resultSet.getRoots())
+
+    def drawTable(self, identifier):
+        qWidget = self.initTableWidget()
+        self.resultsTabWidget.addTab(qWidget, QtCore.QString(identifier))
+        qTable = self.resultsTabWidget.findChild(QtGui.QTableWidget, "Table")
+        self.tempTables.append(qTable)
+        qTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
+        qTable.setSelectionBehavior(QtGui.QTableWidget.SelectRows)
+        qTable.setSelectionMode(QtGui.QTableWidget.SingleSelection)
+        qTable.itemSelectionChanged.connect(self.plotTempBoundaries)
+        return qWidget
+
+    def initTableWidget(self):
+        qWidget = QtGui.QWidget()
+        qVbox = QtGui.QVBoxLayout()
+        qTable = QtGui.QTableWidget()
+        qTable.setObjectName("Table")
+        qWidget3 = QtGui.QWidget()
+        hBox2 = QtGui.QHBoxLayout()
+        hBox2.setMargin(0)
+        precisionLabel = QtGui.QLabel()
+        precisionLabel.setText("Precision")
+        precisionField = QtGui.QLineEdit()
+        precisionField.setObjectName("Precision")
+        precisionField.setReadOnly(True)
+        timeLabel = QtGui.QLabel()
+        timeLabel.setText("Time")
+        timeField = QtGui.QLineEdit()
+        timeField.setObjectName("Time")
+        timeField.setReadOnly(True)
+        hBox2.addWidget(precisionLabel)
+        hBox2.addWidget(precisionField)
+        hBox2.addWidget(timeLabel)
+        hBox2.addWidget(timeField)
+        qWidget3.setLayout(hBox2)
+        qVbox.addWidget(qTable)
+        qVbox.addWidget(qWidget3)
+        qWidget.setLayout(qVbox)
+        return qWidget
+
+        # def updateTables(self):
+
+
+        # def drawSolution(self):
+        #
+        #
+        # def drawTime(self):
+        #
+        #
+        # def drawTables(self):
 
 
 if __name__ == "__main__":
