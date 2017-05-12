@@ -1,4 +1,4 @@
-from gauss_elimination import partial_pivot
+from util import partial_pivot
 
 
 def gauss_jordan(A, B):
@@ -17,11 +17,11 @@ def gauss_jordan(A, B):
     return X
 
 
-A = [[25.0, 5.0, 1.0], [64.0, 8.0, 1.0], [144.0, 12.0, 1.0]]
-B = [106.8, 177.2, 279.2]
+# A = [[25.0, 5.0, 1.0], [64.0, 8.0, 1.0], [144.0, 12.0, 1.0]]
+# B = [106.8, 177.2, 279.2]
 # A = [[1.0, 1.0, 1.0], [1.0, 1.0, 2.0], [1.0, 2.0, 2.0]]
 # B = [1.0, 2.0, 1.0]
 # A = [[25.0, 5.0, 1.0]]
-print gauss_jordan(A, B)
+# print gauss_jordan(A, B)
 
 # print B
