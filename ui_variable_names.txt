@@ -1,0 +1,36 @@
+QMainWindow
+splitter
+
+textAreaRadio
+fileRadio
+
+matrixInputArea
+loadFileButton
+
+solveButton
+methodsButton
+variablesComboBox
+
+resultsTabWidget
+    resultsTable
+        table1Tab
+            resultsTable
+            precisionField
+            timeField
+        table2Tab
+
+graphTabWidget
+    graph1Tab
+        mplwindow (layout: mplvl)
+    graph2Tab
+
+
+Options Dialog:
+---------------
+
+gaussEliminationCheckBox
+gaussJordanCheckBox
+luDecompositionCheckBox
+gaussSeidelCheckBox
+gaussSeidelInitialGuessField
+
