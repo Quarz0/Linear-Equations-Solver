@@ -1,5 +1,6 @@
 from gauss_elimination import partial_pivot
 
+
 def gauss_jordan(A, B):
     n = len(B)
     o = [i for i in xrange(n)]
