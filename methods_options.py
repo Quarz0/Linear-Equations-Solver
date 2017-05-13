@@ -25,8 +25,9 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 
-class Ui_Dialog(object):
+class Ui_Dialog(QtGui.QDialog):
     def setupUi(self, Dialog):
+        QtGui.QDialog.__init__(self)
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(349, 363)
         Dialog.setMinimumSize(QtCore.QSize(349, 363))
@@ -34,7 +35,8 @@ class Ui_Dialog(object):
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(40, 320, 291, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(False)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.widget = QtGui.QWidget(Dialog)
         self.widget.setGeometry(QtCore.QRect(10, 10, 332, 291))
@@ -88,6 +90,8 @@ class Ui_Dialog(object):
         self.horizontalLayout_4.addWidget(self.label_6)
         self.gaussSeidelInitialGuessField = QtGui.QLineEdit(self.widget_8)
         self.gaussSeidelInitialGuessField.setObjectName(_fromUtf8("gaussSeidelInitialGuessField"))
+        self.gaussSeidelInitialGuessField.setReadOnly(True)
+        self.gaussSeidelInitialGuessField.setValidator(QtGui.QDoubleValidator())
         self.horizontalLayout_4.addWidget(self.gaussSeidelInitialGuessField)
         self.verticalLayout.addWidget(self.widget_8)
 

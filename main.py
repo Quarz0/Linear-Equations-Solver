@@ -25,6 +25,9 @@ class NewNavigationToolbar(NavigationToolbar):
 class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     solveButtonTrigger = QtCore.pyqtSignal()
     methodsCheckMap = None
+    Dialog = None
+    dialogUI = None
+    isValidEquation = False
     methodsCheckMapAlias = {}
     tempResultSets = []
     tempTables = []
@@ -57,12 +60,13 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.dialogUI = Ui_Dialog()
         self.dialogUI.setupUi(self.Dialog)
 
-        self.solveButtonTrigger.connect(self.handleSolveButton)
-
         self.methodsCheckMap = {self.dialogUI.gaussEliminationCheckBox: [],
                                 self.dialogUI.gaussJordanCheckBox: [],
                                 self.dialogUI.luDecompositionCheckBox: [],
                                 self.dialogUI.gaussSeidelCheckBox: [self.dialogUI.gaussSeidelInitialGuessField]}
+        self.solveButtonTrigger.connect(self.handleSolveButton)
+        self.cloneOptionsMapInfo()
+        self.initOptionsHandlers()
 
     @QtCore.pyqtSlot()
     def solveEquations(self):
@@ -117,6 +121,35 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
             key.setChecked(val[0])
             for i in range(len(val[1])):
                 self.methodsCheckMap[key][i].setText(val[1][i])
+
+    def initOptionsHandlers(self):
+        for (key, val) in self.methodsCheckMap.items():
+            key.stateChanged.connect(self.assignReadOnlyHandler)
+            key.stateChanged.connect(self.checkForValidInputs)
+            for va in val:
+                va.textChanged.connect(self.checkForValidInputs)
+
+    def assignReadOnlyHandler(self, state):
+        checkBox = self.Dialog.sender()
+        print checkBox.objectName()
+        for val in self.methodsCheckMap[checkBox]:
+            val.setReadOnly(True) if not checkBox.isChecked() else val.setReadOnly(False)
+
+    def checkForValidInputs(self, text):
+        buttonState = False
+        for (key, vals) in self.methodsCheckMap.items():
+            if key.isChecked():
+                tempState = True
+                for val in vals:
+                    if val.validator().validate(val.text(), 0)[0] != QtGui.QValidator.Acceptable:
+                        tempState = False
+                        break
+                if not tempState:
+                    buttonState = False
+                    break
+                else:
+                    buttonState = True
+        self.dialogUI.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(buttonState)
 
     def init_Figure(self):
         self.figure = plt.figure()
