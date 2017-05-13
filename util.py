@@ -1,8 +1,11 @@
 import math
 
 
-def calcPrecision(ea):
-    return ['Exact' if k == 0 else int(-1 * math.log10(2.0 * k)) for k in ea]
+def calcPrecision(ea, variables):
+    precisions = {}
+    for i in xrange(len(ea)):
+        precisions[variables[i]] = 'Exact' if ea[i] == 0 else int(-1 * math.log10(2.0 * ea[i]))
+    return precisions
 
 
 def castMatrixToFloat(matrix):

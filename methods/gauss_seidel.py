@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def gauss_seidel(A, B, X0, iterations=50, eps=0.00001):
+def gauss_seidel(A, B, X0, iterations=50, eps=0.00001, variables=None):
     X_new, X_old = X0[:], X0[:]
     n = len(B)
 
@@ -39,11 +39,12 @@ def gauss_seidel(A, B, X0, iterations=50, eps=0.00001):
 
     executionTime = timeit.default_timer() - startTime
 
-    tables = []
+    if variables == None: variables = ['x' + str(i+1) for i in xrange(n)]
+    tables = {}
     for i in xrange(n):
-        tables.append(Table("Gauss-Seidel", ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i]))
+        tables[variables[i]] = Table(str(variables[i]), ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i])
 
-    return ResultSet(tables, X_new, calcPrecision(ea_rel), executionTime, t + 2, roots)
+    return ResultSet('Gauss-Seidel', tables, X_new, calcPrecision(ea_rel, variables), executionTime, t + 2, roots)
 
 # A = [[12, 3, -5], [1, 5, 3], [3, 7, 13]]
 # C = [1, 0, 1]
