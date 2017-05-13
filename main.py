@@ -3,9 +3,11 @@ import sys
 from PyQt4 import QtGui, QtCore, uic
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from sympy import Matrix, MatMul, latex, Eq
 
 from methods_options import Ui_Dialog
 from resultset import ResultSet
+from util import sliceEquations, parseFloats
 
 plt.rc('text', usetex=True)
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
@@ -21,6 +23,9 @@ class NewNavigationToolbar(NavigationToolbar):
 
 
 class MyApp(QtGui.QMainWindow, Ui_MainWindow):
+    solveButtonTrigger = QtCore.pyqtSignal()
+    methodsCheckMap = None
+    methodsCheckMapAlias = {}
     tempResultSets = []
     tempTables = []
 
@@ -30,7 +35,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.init_Figure()
 
-        self.solveButton.setEnabled(False)
+        # self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquations)
         self.resultsTabWidget.clear()
         self.resultsTabWidget.currentChanged.connect(self.handleResultTabChanging)
@@ -52,15 +57,26 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.dialogUI = Ui_Dialog()
         self.dialogUI.setupUi(self.Dialog)
 
-        self.solveButton.connect(self.handleSolveButton)
+        self.solveButtonTrigger.connect(self.handleSolveButton)
+
+        self.methodsCheckMap = {self.dialogUI.gaussEliminationCheckBox: [],
+                                self.dialogUI.gaussJordanCheckBox: [],
+                                self.dialogUI.luDecompositionCheckBox: [],
+                                self.dialogUI.gaussSeidelCheckBox: [self.dialogUI.gaussSeidelInitialGuessField]}
 
     @QtCore.pyqtSlot()
     def solveEquations(self):
-        print "Solving"
+        self.clearAll()
+        strEqus = sliceEquations(str(self.matrixInputArea.toPlainText()))
+        floatEqus = parseFloats(strEqus)
 
     @QtCore.pyqtSlot()
     def handleMethodsButton(self):
-        print "Handling Methods Button"
+        if self.Dialog.exec_():
+            self.cloneOptionsMapInfo()
+            self.solveButtonTrigger.emit()
+        else:
+            self.pasteToOptionsMapInfo()
 
     @QtCore.pyqtSlot()
     def handleResultTabChanging(self):
@@ -86,15 +102,31 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     def handleSolveButton(self):
         print "Handling Solve Button"
 
+    def clearAll(self):
+        print "Clearing..."
+
+    def cloneOptionsMapInfo(self):
+        for (key, val) in self.methodsCheckMap.items():
+            vals = []
+            for va in val:
+                vals.append(str(va.text()))
+            self.methodsCheckMapAlias[key] = (key.isChecked(), vals)
+
+    def pasteToOptionsMapInfo(self):
+        for (key, val) in self.methodsCheckMapAlias.items():
+            key.setChecked(val[0])
+            for i in range(len(val[1])):
+                self.methodsCheckMap[key][i].setText(val[1][i])
+
     def init_Figure(self):
         self.figure = plt.figure()
         self.figure.patch.set_facecolor('white')
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NewNavigationToolbar(self.canvas, self.mplwindow, coordinates=False)
-        # plt.text(0, 0.5, latex(Eq(
-        #     MatMul(Matrix([[322222222222222222222222.55555555222111144444555555, 2.000000000000000000000000000001]]),
-        #            Matrix([['xadsdasdasdasdasdasdasdas'], ['ysadasdsadasdsadasdasdasds']]), evaluate=False),
-        #     Matrix([[1, 2]]), evaluate=False), mode='inline'), fontsize=30)
+        plt.text(0, 0.5, latex(Eq(
+            MatMul(Matrix([[322222222222222222222222.55555555222111144444555555, 2.000000000000000000000000000001]]),
+                   Matrix([['xadsdasdasdasdasdasdasdas'], ['ysadasdsadasdsadasdasdasds']]), evaluate=False),
+            Matrix([[1, 2]]), evaluate=False), mode='inline'), fontsize=30)
         plt.axis('off')
         self.mplvl.addWidget(self.canvas)
         self.mplvl.addWidget(self.toolbar)

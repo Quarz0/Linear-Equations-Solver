@@ -44,3 +44,24 @@ def back_substitution(n, o, A, B):
         sum_ = sum([A[o[i]][j] * X[j] for j in xrange(i + 1, n)])
         X[i] = (B[o[i]] - sum_) / A[o[i]][i]
     return X
+
+
+def sliceEquations(lines):
+    parsedEquations = []
+    equationsList = lines.split('\n')
+    for equation in equationsList:
+        parsedEquations.append(equation.split(','))
+    for lis in parsedEquations:
+        for i in xrange(len(lis)):
+            lis[i] = lis[i].strip()
+    return parsedEquations
+
+
+def parseFloats(equations):
+    parsedFloats = []
+    for lis in equations:
+        newLis = []
+        for num in lis:
+            newLis.append(float(num))
+        parsedFloats.append(newLis)
+    return parsedFloats
