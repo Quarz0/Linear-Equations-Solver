@@ -4,6 +4,7 @@ from PyQt4 import QtGui, QtCore, uic
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 
+from methods_options import Ui_Dialog
 from resultset import ResultSet
 
 plt.rc('text', usetex=True)
@@ -28,6 +29,62 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
         self.init_Figure()
+
+        self.solveButton.setEnabled(False)
+        self.solveButton.clicked.connect(self.solveEquations)
+        self.resultsTabWidget.clear()
+        self.resultsTabWidget.currentChanged.connect(self.handleResultTabChanging)
+        self.methodsButton.clicked.connect(self.handleMethodsButton)
+
+        self.textAreaRadio.toggled.connect(self.handleRadioButtons)
+        self.textAreaRadio.toggle()
+        number_group = QtGui.QButtonGroup(self)  # Number group
+        number_group.addButton(self.textAreaRadio)
+        number_group.addButton(self.fileRadio)
+
+        self.loadFileButton.setDisabled(True)
+        self.loadFileButton.clicked.connect(self.openLoadFileDialog)
+        self.fileRadio.toggled.connect(self.handleRadioButtons)
+
+        self.matrixInputArea.textChanged.connect(self.drawMatrix)
+
+        self.Dialog = QtGui.QDialog()
+        self.dialogUI = Ui_Dialog()
+        self.dialogUI.setupUi(self.Dialog)
+
+        self.solveButton.connect(self.handleSolveButton)
+
+    @QtCore.pyqtSlot()
+    def solveEquations(self):
+        print "Solving"
+
+    @QtCore.pyqtSlot()
+    def handleMethodsButton(self):
+        print "Handling Methods Button"
+
+    @QtCore.pyqtSlot()
+    def handleResultTabChanging(self):
+        print "Handling results tab"
+
+    @QtCore.pyqtSlot()
+    def openLoadFileDialog(self):
+        print "Opening Load file dialog"
+
+    @QtCore.pyqtSlot()
+    def handleRadioButtons(self):
+        self.matrixInputArea.setReadOnly(
+            True) if not self.textAreaRadio.isChecked() else self.matrixInputArea.setReadOnly(
+            False)
+        self.loadFileButton.setDisabled(True) if not self.fileRadio.isChecked() else self.loadFileButton.setDisabled(
+            False)
+
+    @QtCore.pyqtSlot()
+    def drawMatrix(self):
+        print "Drawing Matrix"
+
+    @QtCore.pyqtSlot()
+    def handleSolveButton(self):
+        print "Handling Solve Button"
 
     def init_Figure(self):
         self.figure = plt.figure()

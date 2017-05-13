@@ -39,7 +39,7 @@ def gauss_seidel(A, B, X0, iterations=50, eps=0.00001, variables=None):
 
     executionTime = timeit.default_timer() - startTime
 
-    if variables == None: variables = ['x' + str(i+1) for i in xrange(n)]
+    if variables == None: variables = ['x' + str(i + 1) for i in xrange(n)]
     tables = {}
     for i in xrange(n):
         tables[variables[i]] = Table(str(variables[i]), ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i])
