@@ -54,6 +54,15 @@ def sliceEquations(lines):
     for lis in parsedEquations:
         for i in xrange(len(lis)):
             lis[i] = lis[i].strip()
+    maxSize = 0
+    for equ in parsedEquations:
+        maxSize = max(maxSize, len(equ))
+    for equ in parsedEquations:
+        for i in xrange(len(equ)):
+            if not equ[i]:
+                equ[i] = r'0.0'
+        while len(equ) != maxSize:
+            equ.append(r'0.0')
     return parsedEquations
 
 

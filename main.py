@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
-import sys
 from PyQt4 import QtGui, QtCore, uic
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-from sympy import Matrix, MatMul, latex, Eq
+from sympy import *
+from sympy.core.sympify import SympifyError
 
 from methods_options import Ui_Dialog
 from resultset import ResultSet
@@ -27,6 +27,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     methodsCheckMap = None
     Dialog = None
     dialogUI = None
+    text = None
     isValidEquation = False
     methodsCheckMapAlias = {}
     tempResultSets = []
@@ -100,7 +101,13 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def drawMatrix(self):
-        print "Drawing Matrix"
+        strEqus = sliceEquations(str(self.matrixInputArea.toPlainText()))
+        try:
+            self.text.set_text(latex(Matrix(strEqus), mode='inline'))
+        except (SympifyError, ValueError) as e:
+            print e
+        self.figure.canvas.draw()
+        self.solveButtonTrigger.emit()
 
     @QtCore.pyqtSlot()
     def handleSolveButton(self):
@@ -156,11 +163,10 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.figure.patch.set_facecolor('white')
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NewNavigationToolbar(self.canvas, self.mplwindow, coordinates=False)
-        plt.text(0, 0.5, latex(Eq(
-            MatMul(Matrix([[322222222222222222222222.55555555222111144444555555, 2.000000000000000000000000000001]]),
-                   Matrix([['xadsdasdasdasdasdasdasdas'], ['ysadasdsadasdsadasdasdasds']]), evaluate=False),
-            Matrix([[1, 2]]), evaluate=False), mode='inline'), fontsize=30)
+        self.text = plt.text(0, 0.5, 'WELCOME', fontsize=20)
         plt.axis('off')
+        self.figure.text(0, 0.5, "", fontsize=30)
+
         self.mplvl.addWidget(self.canvas)
         self.mplvl.addWidget(self.toolbar)
         self.toolbar._actions['pan'].trigger()
@@ -233,6 +239,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     window = MyApp()
     window.show()
