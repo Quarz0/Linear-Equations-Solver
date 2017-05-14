@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def gauss_seidel(A, B, X0, iterations=50, eps=0.00001, variables=None):
+def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
     X_new, X_old = X0[:], X0[:]
     n = len(B)
 

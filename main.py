@@ -1,3 +1,4 @@
+import importlib
 import matplotlib.pyplot as plt
 from PyQt4 import QtGui, QtCore, uic
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -72,8 +73,20 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def solveEquations(self):
         self.clearAll()
-        strEqus = sliceEquations(str(self.matrixInputArea.toPlainText()))
-        floatEqus = parseFloats(strEqus)
+        ((A, vars), B) = sliceEquations(str(self.matrixInputArea.toPlainText()))
+        floatA = parseFloats(A)
+        floatB = parseFloats(B)
+        for (key, val) in self.methodsCheckMapAlias.items():
+            if val[0]:
+                method = str(key.objectName())
+                print 'methods.' + method
+                self.drawResultSet(
+                    getattr(importlib.import_module('methods.' + method), method)(floatA, floatB, variables=vars,
+                                                                                  *[float(i) for i in val[1]]))
+        self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
+        # self.updateTables()
+
+        # self.plotAll()
 
     @QtCore.pyqtSlot()
     def handleMethodsButton(self):
@@ -101,9 +114,12 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def drawMatrix(self):
-        strEqus = sliceEquations(str(self.matrixInputArea.toPlainText()))
+        ((A, vars), B) = sliceEquations(str(self.matrixInputArea.toPlainText()))
         try:
-            self.text.set_text(latex(Matrix(strEqus), mode='inline'))
+            self.text.set_text(latex(Eq(
+                MatMul(Matrix(A),
+                       Matrix(vars), evaluate=False),
+                Matrix(B), evaluate=False), mode='inline'))
         except (SympifyError, ValueError) as e:
             print e
         self.figure.canvas.draw()
@@ -114,7 +130,13 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         print "Handling Solve Button"
 
     def clearAll(self):
-        print "Clearing..."
+        count = self.resultsTabWidget.count()
+        for i in xrange(count):
+            self.resultsTabWidget.widget(i).deleteLater()
+        self.tempTables[:] = []
+        self.tempResultSets[:] = []
+        self.text.set_text('')
+        self.variablesComboBox.clear()
 
     def cloneOptionsMapInfo(self):
         for (key, val) in self.methodsCheckMap.items():
@@ -138,7 +160,6 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
 
     def assignReadOnlyHandler(self, state):
         checkBox = self.Dialog.sender()
-        print checkBox.objectName()
         for val in self.methodsCheckMap[checkBox]:
             val.setReadOnly(True) if not checkBox.isChecked() else val.setReadOnly(False)
 
@@ -176,10 +197,9 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
-        self.variablesComboBox.addItems(list(resultSet.getTables().keys()).sort())  # move to @Solve button
         qWidget = self.drawTable(resultSet.getIdentifier())
-        self.updateTables()  # move to @Solve button
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
+        print resultSet
 
         # self.drawSolution(resultSet.getSolution())
         # self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))

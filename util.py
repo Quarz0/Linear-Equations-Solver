@@ -1,5 +1,7 @@
 import math
 
+USED_VAR = 'x'
+
 
 def calcPrecision(ea, variables):
     precisions = {}
@@ -47,23 +49,36 @@ def back_substitution(n, o, A, B):
 
 
 def sliceEquations(lines):
-    parsedEquations = []
+    A = []
+    B = []
+    vars = []
     equationsList = lines.split('\n')
     for equation in equationsList:
-        parsedEquations.append(equation.split(','))
-    for lis in parsedEquations:
+        A.append(equation.split(','))
+    for lis in A:
         for i in xrange(len(lis)):
             lis[i] = lis[i].strip()
     maxSize = 0
-    for equ in parsedEquations:
+    for equ in A:
         maxSize = max(maxSize, len(equ))
-    for equ in parsedEquations:
+    for equ in A:
         for i in xrange(len(equ)):
             if not equ[i]:
                 equ[i] = r'0.0'
         while len(equ) != maxSize:
             equ.append(r'0.0')
-    return parsedEquations
+    if maxSize == 1:
+        for lis in A:
+            B.append(lis[:])
+    else:
+        for i in xrange(len(A)):
+            b = []
+            b.append(A[i][maxSize - 1])
+            B.append(b)
+            A[i] = A[i][:maxSize - 1]
+    vars = [[USED_VAR + str(i + 1)] for i in xrange(maxSize if maxSize == 1 else maxSize - 1)]
+
+    return ((A, vars), B)
 
 
 def parseFloats(equations):
