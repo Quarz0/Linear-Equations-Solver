@@ -112,7 +112,10 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                 for j in xrange(len(self.tempVars[i])):
                     subVar.append(self.tempVars[i][j] + '=' + str(self.tempResultSets[index].getSolution()[i][j]))
                 vars.append(subVar)
-
+            # print latex(Eq(
+            #     MatMul(Matrix(self.tempFloatA),
+            #            Matrix(self.tempResultSets[index].getSolution()), evaluate=False),
+            #     Matrix(self.tempFloatB), evaluate=False), mode='inline')
             self.text.set_text(latex(Eq(
                 MatMul(Matrix(self.tempFloatA),
                        Matrix(self.tempResultSets[index].getSolution()), evaluate=False),
@@ -177,9 +180,9 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         for i in xrange(len(self.tempResultSets)):
             table = self.tempResultSets[i].getTables()[item]
             qTable = self.tempTables[i]
-            qTable.setHorizontalHeaderLabels(table.getHeader())
             qTable.setColumnCount(len(table.getHeader()))
             qTable.setRowCount(len(table.getData()))
+            qTable.setHorizontalHeaderLabels(table.getHeader())
             for row in xrange(len(table.getData())):
                 for column in xrange(len(table.getHeader())):
                     qTable.setItem(row, column,
@@ -258,7 +261,6 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
         # print resultSet
 
-        # self.drawSolution(resultSet.getSolution())
         # self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
         # self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
         # self.plotError(resultSet.getErrors())
