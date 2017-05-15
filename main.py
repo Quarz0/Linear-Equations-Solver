@@ -180,6 +180,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         for i in xrange(len(self.tempResultSets)):
             table = self.tempResultSets[i].getTables()[item]
             qTable = self.tempTables[i]
+            qTable.parentWidget().findChild(QtGui.QLineEdit, "Precision").setText(
+                str(self.tempResultSets[i].getPrecisions()[item]))
             qTable.setColumnCount(len(table.getHeader()))
             qTable.setRowCount(len(table.getData()))
             qTable.setHorizontalHeaderLabels(table.getHeader())
@@ -303,13 +305,6 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         qVbox.addWidget(qWidget3)
         qWidget.setLayout(qVbox)
         return qWidget
-
-
-
-
-        # def drawSolution(self):
-        #
-        #
 
     def drawTime(self, time, timeField):
         assert type(time) is float or int, "time is not of type float nor int!: " + str(type(time))
