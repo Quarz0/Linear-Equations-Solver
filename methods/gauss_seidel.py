@@ -6,6 +6,7 @@ from util import *
 
 
 def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
+    B = matrixToVector(B)
     X_new, X_old = X0[:], X0[:]
     n = len(B)
 
@@ -48,7 +49,7 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
 
 # A = [[12, 3, -5], [1, 5, 3], [3, 7, 13]]
 # C = [1, 0, 1]
-# B = [1, 28, 76]
+# B = [[1], [28], [76]]
 # castMatrixToFloat(A)
 # castMatrixToFloat(B)
 # castMatrixToFloat(C)
