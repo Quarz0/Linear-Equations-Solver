@@ -96,8 +96,6 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                                                                                   variables=matrixToVector(vars)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
 
-        # self.plotAll()
-
     @QtCore.pyqtSlot()
     def handleMethodsButton(self):
         if self.Dialog.exec_():
@@ -182,7 +180,9 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot(int)
     def updateTables(self, index):
         item = str(self.variablesComboBox.itemText(index))
+        self.clearPlots()
         for i in xrange(len(self.tempResultSets)):
+            self.plotRoot(self.tempResultSets[i].getRoots()[item])
             table = self.tempResultSets[i].getTables()[item]
             qTable = self.tempTables[i]
             qTable.parentWidget().findChild(QtGui.QLineEdit, "Precision").setText(
@@ -195,6 +195,11 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                     qTable.setItem(row, column,
                                    QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]) if type(
                                        table.getData()[row][column]) is float else table.getData()[row][column])))
+        self.plotAll()
+
+    def plotAll(self):
+        for i in xrange(1):
+            self.graphTabWidget.findChild(FigureCanvas, 'canvas' + str(i)).draw()
 
     def clearAll(self):
         count = self.resultsTabWidget.count()
@@ -338,11 +343,10 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     def plotRoot(self, roots):
         root = []
         its = []
-        print roots
         for (i, r) in roots:
             root.append(r)
             its.append(i)
-        self.plt3.plot(its, root, c=np.random.rand(3, 1))
+        self.rootPlot.plot(its, root, c=np.random.rand(3, 1))
 
 
 if __name__ == "__main__":
@@ -351,4 +355,5 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = MyApp()
     window.show()
+    window.showMaximized()
     sys.exit(app.exec_())
