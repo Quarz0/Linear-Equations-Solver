@@ -116,6 +116,7 @@ def matrixToVector(matrix):
         A.append(row[0])
     return A
 
+
 def vectorToMatrix(vec):
     matrix = []
     for i in vec:

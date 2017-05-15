@@ -70,6 +70,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.solveButtonTrigger.connect(self.handleSolveButton)
         self.cloneOptionsMapInfo()
         self.initOptionsHandlers()
+        self.variablesComboBox.currentIndexChanged.connect(self.updateTables)
 
     @QtCore.pyqtSlot()
     def solveEquations(self):
@@ -85,7 +86,6 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                                                                                   self.initialGaussSeidel,
                                                                                   variables=matrixToVector(vars)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
-        # self.updateTables()
 
         # self.plotAll()
 
@@ -150,6 +150,21 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                 break
 
         self.solveButton.setEnabled(validInputs and chosenMethod)
+
+    @QtCore.pyqtSlot(int)
+    def updateTables(self, index):
+        item = str(self.variablesComboBox.itemText(index))
+        for i in xrange(len(self.tempResultSets)):
+            table = self.tempResultSets[i].getTables()[item]
+            qTable = self.tempTables[i]
+            qTable.setHorizontalHeaderLabels(table.getHeader())
+            qTable.setColumnCount(len(table.getHeader()))
+            qTable.setRowCount(len(table.getData()))
+            for row in xrange(len(table.getData())):
+                for column in xrange(len(table.getHeader())):
+                    qTable.setItem(row, column,
+                                   QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]) if type(
+                                       table.getData()[row][column]) is float else table.getData()[row][column])))
 
     def clearAll(self):
         count = self.resultsTabWidget.count()
@@ -221,7 +236,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.tempResultSets.append(resultSet)
         qWidget = self.drawTable(resultSet.getName())
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
-        print resultSet
+        # print resultSet
 
         # self.drawSolution(resultSet.getSolution())
         # self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
@@ -267,7 +282,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         qWidget.setLayout(qVbox)
         return qWidget
 
-        # def updateTables(self):
+
 
 
         # def drawSolution(self):

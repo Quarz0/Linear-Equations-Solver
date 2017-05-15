@@ -45,7 +45,8 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
     for i in xrange(n):
         tables[variables[i]] = Table(str(variables[i]), ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i])
 
-    return ResultSet('Gauss-Seidel', tables, vectorToMatrix(X_new), calcPrecision(ea_rel, variables), executionTime, t + 2, roots)
+    return ResultSet('Gauss-Seidel', tables, vectorToMatrix(X_new), calcPrecision(ea_rel, variables), executionTime,
+                     t + 2, roots)
 
 # A = [[12, 3, -5], [1, 5, 3], [3, 7, 13]]
 # C = [1, 0, 1]
