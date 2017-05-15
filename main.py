@@ -8,7 +8,7 @@ from sympy.core.sympify import SympifyError
 
 from methods_options import Ui_Dialog
 from resultset import ResultSet
-from util import sliceEquations, parseFloats
+from util import sliceEquations, parseFloats, matrixToVector
 
 plt.rc('text', usetex=True)
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
@@ -83,7 +83,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                 self.drawResultSet(
                     getattr(importlib.import_module('methods.' + method), method)(floatA, floatB,
                                                                                   self.initialGaussSeidel,
-                                                                                  variables=vars))
+                                                                                  variables=matrixToVector(vars)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
         # self.updateTables()
 
@@ -219,8 +219,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
-        qWidget = self.drawTable(resultSet.getIdentifier())
-        self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
+        qWidget = self.drawTable(resultSet.getName())
+        # self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
         print resultSet
 
         # self.drawSolution(resultSet.getSolution())
@@ -237,7 +237,6 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         qTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
         qTable.setSelectionBehavior(QtGui.QTableWidget.SelectRows)
         qTable.setSelectionMode(QtGui.QTableWidget.SingleSelection)
-        qTable.itemSelectionChanged.connect(self.plotTempBoundaries)
         return qWidget
 
     def initTableWidget(self):
@@ -274,9 +273,13 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         # def drawSolution(self):
         #
         #
-        # def drawTime(self):
-        #
-        #
+
+        # def drawTime(self, time, timeField):
+        #     assert type(time) is float or int, "time is not of type float nor int!: " + str(type(time))
+        #     assert type(timeField) is QtGui.QLineEdit, "timeField is not of type QtGui.QLineEdit!: " + str(type(timeField))
+        #     timeField.setText(str(('%g' % time)))
+
+
         # def drawTables(self):
 
 

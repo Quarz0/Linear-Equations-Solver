@@ -108,10 +108,10 @@ def parseFloats(equations):
         parsedFloats.append(newLis)
     return parsedFloats
 
+
 def matrixToVector(matrix):
     A = []
     for row in matrix:
         assert len(row) == 1
         A.append(row[0])
     return A
-
