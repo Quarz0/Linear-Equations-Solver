@@ -1,8 +1,10 @@
 import importlib
 import matplotlib.pyplot as plt
+import numpy as np
 from PyQt4 import QtGui, QtCore, uic
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
 from sympy import *
 from sympy.core.sympify import SympifyError
 
@@ -28,6 +30,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     methodsCheckMap = None
     Dialog = None
     dialogUI = None
+    rootPlot = None
     text = None
     isValidEquation = False
     methodsCheckMapAlias = {}
@@ -37,11 +40,13 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     tempFloatB = []
     tempVars = []
     initialGaussSeidel = []
+    figs = []
 
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
+        self.figs = [(Figure(), [self.rootPlot, self.mplvl3, self.mplwindow3])]
         self.init_Figure()
 
         self.solveButton.setEnabled(False)
@@ -199,6 +204,12 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.tempResultSets[:] = []
         self.text.set_text('')
         self.variablesComboBox.clear()
+        self.clearPlots()
+
+    def clearPlots(self):
+        self.rootPlot.cla()
+        self.rootPlot.grid(true)
+        self.rootPlot.autoscale(true, tight=false)
 
     def cloneOptionsMapInfo(self):
         for (key, val) in self.methodsCheckMap.items():
@@ -245,27 +256,39 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.figure = plt.figure()
         self.figure.patch.set_facecolor('white')
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NewNavigationToolbar(self.canvas, self.mplwindow, coordinates=False)
+        self.toolbar = NewNavigationToolbar(self.canvas, self.mplwindow1, coordinates=False)
         self.text = plt.text(0, 0.5, 'WELCOME', fontsize=20)
         plt.axis('off')
         self.figure.text(0, 0.5, "", fontsize=30)
 
-        self.mplvl.addWidget(self.canvas)
-        self.mplvl.addWidget(self.toolbar)
+        self.mplvl1.addWidget(self.canvas)
+        self.mplvl1.addWidget(self.toolbar)
         self.toolbar._actions['pan'].trigger()
         self.toolbar._actions['pan'].setVisible(False)
         self.toolbar._actions['zoom'].setVisible(False)
+        self.init_Drawing_Figures()
+
+    def init_Drawing_Figures(self):
+        i = 0
+        for (fig, ls) in self.figs:
+            ls[0] = fig.add_subplot(111)
+            ls[0].grid(true)
+            canvas = FigureCanvas(fig)
+            canvas.setObjectName("canvas" + str(i))
+            ls[1].addWidget(canvas)
+            toolbar = NavigationToolbar(canvas,
+                                        ls[2], coordinates=True)
+            ls[1].addWidget(toolbar)
+            ls[0].autoscale(true, tight=false)
+            i += 1
+
+        self.rootPlot = self.figs[0][1][0]
 
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
         qWidget = self.drawTable(resultSet.getName())
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
-        # print resultSet
-
-        # self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
-        # self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
-        # self.plotError(resultSet.getErrors())
         # self.plotRoot(resultSet.getRoots())
 
     def drawTable(self, identifier):
@@ -312,8 +335,14 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
             type(timeField))
         timeField.setText(str(('%g' % time)))
 
-
-        # def drawTables(self):
+    def plotRoot(self, roots):
+        root = []
+        its = []
+        print roots
+        for (i, r) in roots:
+            root.append(r)
+            its.append(i)
+        self.plt3.plot(its, root, c=np.random.rand(3, 1))
 
 
 if __name__ == "__main__":
