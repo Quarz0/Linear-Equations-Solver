@@ -91,7 +91,6 @@ class Ui_Dialog(QtGui.QDialog):
         self.gaussSeidelInitialGuessField = QtGui.QLineEdit(self.widget_8)
         self.gaussSeidelInitialGuessField.setObjectName(_fromUtf8("gaussSeidelInitialGuessField"))
         self.gaussSeidelInitialGuessField.setReadOnly(True)
-        self.gaussSeidelInitialGuessField.setValidator(QtGui.QDoubleValidator())
         self.horizontalLayout_4.addWidget(self.gaussSeidelInitialGuessField)
         self.verticalLayout.addWidget(self.widget_8)
 

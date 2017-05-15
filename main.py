@@ -33,6 +33,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     methodsCheckMapAlias = {}
     tempResultSets = []
     tempTables = []
+    initialGaussSeidel = []
 
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
@@ -40,7 +41,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.init_Figure()
 
-        # self.solveButton.setEnabled(False)
+        self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquations)
         self.resultsTabWidget.clear()
         self.resultsTabWidget.currentChanged.connect(self.handleResultTabChanging)
@@ -79,10 +80,10 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
                 method = str(key.objectName())
-                print 'methods.' + method
                 self.drawResultSet(
-                    getattr(importlib.import_module('methods.' + method), method)(floatA, floatB, variables=vars,
-                                                                                  *[float(i) for i in val[1]]))
+                    getattr(importlib.import_module('methods.' + method), method)(floatA, floatB,
+                                                                                  self.initialGaussSeidel,
+                                                                                  variables=vars))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
         # self.updateTables()
 
@@ -127,7 +128,28 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def handleSolveButton(self):
-        print "Handling Solve Button"
+        chosenMethod = False
+        validInputs = False
+        ((A, vars), B) = sliceEquations(str(self.matrixInputArea.toPlainText()))
+        for (state, val) in self.methodsCheckMapAlias.values():
+            if state:
+                chosenMethod = True
+                try:
+                    parseFloats(A)
+                    parseFloats(B)
+                    lis = val[0].split(',')
+                    for i in xrange(len(lis)):
+                        if not lis[i]:
+                            lis[i] = 0.0
+                        else:
+                            lis[i] = float(lis[i])
+                    self.initialGaussSeidel = lis[:]
+                    validInputs = True and (len(lis) == len(vars)) and (len(vars) <= len(A))
+                except:
+                    validInputs = False
+                break
+
+        self.solveButton.setEnabled(validInputs and chosenMethod)
 
     def clearAll(self):
         count = self.resultsTabWidget.count()
@@ -169,7 +191,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
             if key.isChecked():
                 tempState = True
                 for val in vals:
-                    if val.validator().validate(val.text(), 0)[0] != QtGui.QValidator.Acceptable:
+                    if not val.text():
                         tempState = False
                         break
                 if not tempState:
