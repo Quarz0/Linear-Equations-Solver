@@ -13,10 +13,13 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
     iterationRows = [[] for i in xrange(n)]
     ea = ['-' for i in xrange(n)]
     ea_rel = ['-' for i in xrange(n)]
-    roots = [[] for i in xrange(n)]
+    if variables == None: variables = ['x' + str(i + 1) for i in xrange(n)]
+    roots = {}
+    for var in variables:
+        roots[var] = []
 
     for j in xrange(n):
-        roots[j].append((1, X0[j]))
+        roots[variables[j]].append((1, X0[j]))
         iterationRows[j].append([1, X0[j], '-'])
 
     startTime = timeit.default_timer()
@@ -32,7 +35,7 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
             ea_rel[i] = abs(X_new[i] - X_old[i]) / max(abs(X_new[i]), abs(X_old[i]))
             max_ea = max(max_ea, ea[i])
             iterationRows[i].append([t + 2, X_new[i], ea[i]])
-            roots[i].append((t + 2, X_new[i]))
+            roots[variables[i]].append((t + 2, X_new[i]))
 
         X_old = X_new[:]
         if max_ea < eps:
@@ -40,7 +43,6 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
 
     executionTime = timeit.default_timer() - startTime
 
-    if variables == None: variables = ['x' + str(i + 1) for i in xrange(n)]
     tables = {}
     for i in xrange(n):
         tables[variables[i]] = Table(str(variables[i]), ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i])
