@@ -8,7 +8,7 @@ from util import *
 def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
     B = matrixToVector(B)
     X_new, X_old = X0[:], X0[:]
-    n = len(B)
+    n = len(X0)
 
     iterationRows = [[] for i in xrange(n)]
     ea = ['-' for i in xrange(n)]

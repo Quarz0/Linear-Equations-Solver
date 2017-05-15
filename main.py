@@ -220,7 +220,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
         qWidget = self.drawTable(resultSet.getName())
-        # self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
+        self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
         print resultSet
 
         # self.drawSolution(resultSet.getSolution())
@@ -274,10 +274,11 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         #
         #
 
-        # def drawTime(self, time, timeField):
-        #     assert type(time) is float or int, "time is not of type float nor int!: " + str(type(time))
-        #     assert type(timeField) is QtGui.QLineEdit, "timeField is not of type QtGui.QLineEdit!: " + str(type(timeField))
-        #     timeField.setText(str(('%g' % time)))
+    def drawTime(self, time, timeField):
+        assert type(time) is float or int, "time is not of type float nor int!: " + str(type(time))
+        assert type(timeField) is QtGui.QLineEdit, "timeField is not of type QtGui.QLineEdit!: " + str(
+            type(timeField))
+        timeField.setText(str(('%g' % time)))
 
 
         # def drawTables(self):
