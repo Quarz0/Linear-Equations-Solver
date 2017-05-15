@@ -115,3 +115,9 @@ def matrixToVector(matrix):
         assert len(row) == 1
         A.append(row[0])
     return A
+
+def vectorToMatrix(vec):
+    matrix = []
+    for i in vec:
+        matrix.append([i])
+    return matrix
