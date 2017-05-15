@@ -33,6 +33,9 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     methodsCheckMapAlias = {}
     tempResultSets = []
     tempTables = []
+    tempFloatA = []
+    tempFloatB = []
+    tempVars = []
     initialGaussSeidel = []
 
     def __init__(self):
@@ -76,13 +79,14 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     def solveEquations(self):
         self.clearAll()
         ((A, vars), B) = sliceEquations(str(self.matrixInputArea.toPlainText()))
-        floatA = parseFloats(A)
-        floatB = parseFloats(B)
+        self.tempFloatA = parseFloats(A)
+        self.tempFloatB = parseFloats(B)
+        self.tempVars = vars
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
                 method = str(key.objectName())
                 self.drawResultSet(
-                    getattr(importlib.import_module('methods.' + method), method)(floatA, floatB,
+                    getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
                                                                                   self.initialGaussSeidel,
                                                                                   variables=matrixToVector(vars)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
@@ -97,9 +101,25 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         else:
             self.pasteToOptionsMapInfo()
 
-    @QtCore.pyqtSlot()
-    def handleResultTabChanging(self):
-        print "Handling results tab"
+    @QtCore.pyqtSlot(int)
+    def handleResultTabChanging(self, index):
+        for tab in self.tempTables:
+            tab.clearSelection()
+        try:
+            vars = []
+            for i in xrange(len(self.tempVars)):
+                subVar = []
+                for j in xrange(len(self.tempVars[i])):
+                    subVar.append(self.tempVars[i][j] + '=' + str(self.tempResultSets[index].getSolution()[i][j]))
+                vars.append(subVar)
+
+            self.text.set_text(latex(Eq(
+                MatMul(Matrix(self.tempFloatA),
+                       Matrix(self.tempResultSets[index].getSolution()), evaluate=False),
+                Matrix(self.tempFloatB), evaluate=False), mode='inline'))
+        except (SympifyError, ValueError) as e:
+            print e
+        self.figure.canvas.draw()
 
     @QtCore.pyqtSlot()
     def openLoadFileDialog(self):
