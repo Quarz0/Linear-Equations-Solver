@@ -1,4 +1,5 @@
 import math
+from PyQt4 import QtCore
 
 USED_VAR = 'x'
 
@@ -81,6 +82,23 @@ def sliceEquations(lines):
     return ((A, vars), B)
 
 
+def read(path, textArea):
+    data = None
+    with open(path, 'r') as file:
+        data = file.read()
+    textArea.setText(QtCore.QString(data))
+    # return data
+
+
+def write(path, matrix):
+    with open(path, 'w') as file:
+        for row in matrix:
+            string = ''
+            for num in row:
+                string += ', ' + str(num)
+            file.write(string[2:] + '\n')
+
+
 def parseFloats(equations):
     parsedFloats = []
     for lis in equations:
@@ -89,3 +107,11 @@ def parseFloats(equations):
             newLis.append(float(num))
         parsedFloats.append(newLis)
     return parsedFloats
+
+def matrixToVector(matrix):
+    A = []
+    for row in matrix:
+        assert len(row) == 1
+        A.append(row[0])
+    return A
+
