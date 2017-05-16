@@ -10,7 +10,7 @@ from sympy.core.sympify import SympifyError
 
 from methods_options import Ui_Dialog
 from resultset import ResultSet
-from util import sliceEquations, parseFloats, matrixToVector
+from util import sliceEquations, parseFloats, matrixToVector, load
 
 plt.rc('text', usetex=True)
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
@@ -129,7 +129,10 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def openLoadFileDialog(self):
-        print "Opening Load file dialog"
+        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
+                                                  '', "All (*.*)")
+        if fname:
+            load(fname, self, self.dialogUI)
 
     @QtCore.pyqtSlot()
     def handleRadioButtons(self):

@@ -1,5 +1,5 @@
 import math
-from PyQt4 import QtCore
+import json
 
 USED_VAR = 'x'
 
@@ -82,21 +82,19 @@ def sliceEquations(lines):
     return ((A, vars), B)
 
 
-def read(path, textArea):
-    data = None
-    with open(path, 'r') as file:
-        data = file.read()
-    textArea.setText(QtCore.QString(data))
-    # return data
-
-
-def write(path, matrix):
-    with open(path, 'w') as file:
-        for row in matrix:
-            string = ''
-            for num in row:
-                string += ', ' + str(num)
-            file.write(string[2:] + '\n')
+# def load(path, textArea):
+#     with open(path, 'r') as file:
+#         data = file.read()
+#     textArea.setText(QtCore.QString(data))
+#
+#
+# def write(path, matrix):
+#     with open(path, 'w') as file:
+#         for row in matrix:
+#             string = ''
+#             for num in row:
+#                 string += ', ' + str(num)
+#             file.write(string[2:] + '\n')
 
 
 def parseFloats(equations):
@@ -122,3 +120,62 @@ def vectorToMatrix(vec):
     for i in vec:
         matrix.append([i])
     return matrix
+
+
+def castJsonToString(data):
+    for key in data.keys():
+        if type(data[key]) == type({}):
+            data[key] = castJsonToString(data[key])
+        elif type(data[key]) != type([]):
+            data[key] = str(data[key])
+    return data
+
+
+def castMatrixToString(matrix):
+    string = ''
+    for row in matrix:
+        temp = ''
+        for num in row:
+            temp += ', ' + str(num)
+        string += temp[2:] + '\n'
+    return string
+
+
+def load(path, mainWindow, optionsWindow):
+    with open(path, 'r') as file:
+        data = json.load(file)
+    data = castJsonToString(data)
+
+    mainWindow.matrixInputArea.setText(castMatrixToString(data['equations']))
+
+    if 'max_iters' in data.keys():
+        mainWindow.maxItersField.setText(data['max_iters'])
+    if 'eps' in data.keys():
+        mainWindow.epsField.setText(data['eps'])
+
+    if 'gauss_elimination' in data.keys():
+        optionsWindow.gaussEliminationCheckBox.setChecked(True)
+
+    if 'gauss_jordan' in data.keys():
+        optionsWindow.gaussJordanCheckBox.setChecked(True)
+
+    if 'gauss_seidel' in data.keys():
+        optionsWindow.gaussSeidelCheckBox.setChecked(True)
+        optionsWindow.gaussSeidelInitialGuessField.setText(str(data['gauss_seidel']['initial_guess'])[1:-1])
+
+    if 'lu_decomposition' in data.keys():
+        optionsWindow.luDecompositionCheckBox.setChecked(True)
+
+
+def save(path, resultSets):
+    data = {}
+    data['equation'] = resultSets[0].getEquation()
+    for resultSet in resultSets:
+        data[resultSet.getTable().getTitle()] = {'Root': resultSet.getRoot(),
+                                                 'Number of iterations': resultSet.getNumberOfIterations(),
+                                                 'Precision': resultSet.getPrecision(),
+                                                 'Execution Time': resultSet.getExecutionTime(),
+                                                 'Table': {'Header': resultSet.getTable().getHeader(),
+                                                           'Data': resultSet.getTable().getData()}}
+    with open(path, 'w') as file:
+        json.dump(data, file)
