@@ -133,6 +133,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                                                   '', "All (*.*)")
         if fname:
             load(fname, self, self.dialogUI)
+            self.cloneOptionsMapInfo()
+            self.solveButtonTrigger.emit()
 
     @QtCore.pyqtSlot()
     def handleRadioButtons(self):
