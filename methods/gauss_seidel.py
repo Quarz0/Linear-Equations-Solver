@@ -6,6 +6,7 @@ from util import *
 
 
 def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
+    tempA, tempB = A, B
     B = matrixToVector(B)
     X_new, X_old = X0[:], X0[:]
     n = len(X0)
@@ -45,9 +46,10 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
 
     tables = {}
     for i in xrange(n):
-        tables[variables[i]] = Table(str(variables[i]), ['Step', 'x' + str(i + 1), 'Abs. Error'], iterationRows[i])
+        tables[variables[i]] = Table(str(variables[i]), ['Step', variables[i], 'Abs. Error'], iterationRows[i])
 
-    return ResultSet('Gauss-Seidel', tables, vectorToMatrix(X_new), calcPrecision(ea_rel, variables), executionTime,
+    return ResultSet(tempA, tempB, variables, 'Gauss-Seidel', tables, vectorToMatrix(X_new),
+                     calcPrecision(ea_rel, variables), executionTime,
                      t + 2, roots)
 
 # A = [[12, 3, -5], [1, 5, 3], [3, 7, 13]]

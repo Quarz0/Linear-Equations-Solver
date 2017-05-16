@@ -1,11 +1,18 @@
-from util import forward_elimination
+import timeit
+from util import *
+from table import Table
+from resultset import ResultSet
 
 
-def LU_decomposition(A, B):
+def LU_decomposition(A, B, variables=None, iterations=50, eps=0.0000):
+    tempA, tempB = A, B
+    B = matrixToVector(B)
     n = len(B)
     o = [i for i in xrange(n)]
-    forward_elimination(n, o, A)
+    if variables == None: variables = ['x' + str(i + 1) for i in xrange(n)]
 
+    startTime = timeit.default_timer()
+    forward_elimination(n, o, A)
     Y = [B[o[0]] for i in xrange(n)]
     for i in xrange(1, n):
         Y[i] = B[o[i]] - sum([A[o[i]][j] * Y[j] for j in xrange(0, i)])
@@ -14,7 +21,14 @@ def LU_decomposition(A, B):
     for i in xrange(n - 2, -1, -1):
         X[i] = (Y[i] - sum([A[o[i]][j] * X[j] for j in xrange(i + 1, n)])) / A[o[i]][i]
 
-    return X
+    executionTime = timeit.default_timer() - startTime
+
+    tables = {}
+    for i in xrange(n):
+        tables[variables[i]] = Table(str(variables[i]), ['Step', variables[i], 'Abs. Error'], [1, X[i], '-'])
+
+    return ResultSet(tempA, tempB, variables, 'LU-Decomposition', tables, vectorToMatrix(X),
+                     calcPrecision([0 for i in xrange(n)], variables), executionTime, 1)
 
 
     # A = [[25.0, 5.0, 1.0], [64.0, 8.0, 1.0], [144.0, 12.0, 1.0]]

@@ -1,5 +1,9 @@
 class ResultSet(object):
-    def __init__(self, name=None, tables=None, solution=None, precisions=None, time=None, iters=None, roots=[]):
+    def __init__(self, matrixA=None, matrixB=None, variables=None, name=None, tables=None, solution=None,
+                 precisions=None, time=None, iters=None, roots=[]):
+        self.matrixA = matrixA
+        self.matrixB = matrixB
+        self.variables = variables
         self.name = name
         self.tables = tables
         self.solution = solution
@@ -7,6 +11,15 @@ class ResultSet(object):
         self.time = time
         self.numIters = iters
         self.roots = roots
+
+    def getMatrixA(self):
+        return self.matrixA
+
+    def getMatrixB(self):
+        return self.matrixB
+
+    def getVariables(self):
+        return self.variables
 
     def getName(self):
         return self.name
