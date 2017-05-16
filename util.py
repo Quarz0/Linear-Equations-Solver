@@ -168,14 +168,18 @@ def load(path, mainWindow, optionsWindow):
 
 
 def save(path, resultSets):
-    data = {}
-    data['equation'] = resultSets[0].getEquation()
+    data = {'A': resultSets[0].getMatrixA(), 'B': resultSets[0].getMatrixB(), 'Variables': resultSets[0].getVariables()}
     for resultSet in resultSets:
-        data[resultSet.getTable().getTitle()] = {'Root': resultSet.getRoot(),
-                                                 'Number of iterations': resultSet.getNumberOfIterations(),
-                                                 'Precision': resultSet.getPrecision(),
-                                                 'Execution Time': resultSet.getExecutionTime(),
-                                                 'Table': {'Header': resultSet.getTable().getHeader(),
-                                                           'Data': resultSet.getTable().getData()}}
+        data[resultSet.getName()] = {'Solution': resultSet.getSolution(),
+                                     'Root': resultSet.getRoot(),
+                                     'Number of iterations': resultSet.getNumberOfIterations(),
+                                     'Precisions': resultSet.getPrecisions(),
+                                     'Execution Time': resultSet.getExecutionTime()}
+        temp = {}
+        for key in resultSet.getTables().keys():
+            temp[resultSet.getTables()[key].getTitle()] = {'Header': resultSet.getTables()[key].getHeader(),
+                                                           'Data': resultSet.getTables()[key].getData()}
+        data[resultSet.getName()]['Tables'] = temp
+
     with open(path, 'w') as file:
-        json.dump(data, file)
+        json.dump(castJsonToString(data), file, indent=4, sort_keys=True)
