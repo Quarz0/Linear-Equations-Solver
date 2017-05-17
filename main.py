@@ -49,6 +49,15 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         self.figs = [(Figure(), [self.rootPlot, self.mplvl3, self.mplwindow3])]
         self.init_Figure()
 
+        intValidator = QtGui.QIntValidator()
+        intValidator.setBottom(1)
+        self.maxItersField.setValidator(intValidator)
+        self.maxItersField.setPlaceholderText("50 by default")
+        floatValidator = QtGui.QDoubleValidator()
+        floatValidator.setBottom(0)
+        self.epsField.setValidator(floatValidator)
+        self.epsField.setPlaceholderText("0.00001 by default")
+
         self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquations)
         self.resultsTabWidget.clear()
@@ -94,11 +103,19 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                     self.drawResultSet(
                         getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
                                                                                       self.initialGaussSeidel,
-                                                                                      variables=matrixToVector(vars)))
+                                                                                      variables=matrixToVector(vars),
+                                                                                      iterations=int(
+                                                                                          self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                      eps=float(
+                                                                                          self.epsField.text() if self.epsField.text() else 0.00001)))
                 else:
                     self.drawResultSet(
                         getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
-                                                                                      variables=matrixToVector(vars)))
+                                                                                      variables=matrixToVector(vars),
+                                                                                      iterations=int(
+                                                                                          self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                      eps=float(
+                                                                                          self.epsField.text() if self.epsField.text() else 0.00001)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
 
     @QtCore.pyqtSlot()
