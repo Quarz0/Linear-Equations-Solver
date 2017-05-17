@@ -209,7 +209,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         item = str(self.variablesComboBox.itemText(index))
         self.clearPlots()
         for i in xrange(len(self.tempResultSets)):
-            self.plotRoot(self.tempResultSets[i].getRoots()[item])
+            if len(self.tempResultSets[i].getRoots().keys() != 0):
+                self.plotRoot(self.tempResultSets[i].getRoots()[item])
             table = self.tempResultSets[i].getTables()[item]
             qTable = self.tempTables[i]
             qTable.parentWidget().findChild(QtGui.QLineEdit, "Precision").setText(
