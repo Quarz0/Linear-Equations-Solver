@@ -10,7 +10,7 @@ from sympy.core.sympify import SympifyError
 
 from methods_options import Ui_Dialog
 from resultset import ResultSet
-from util import sliceEquations, parseFloats, matrixToVector, load, cloneMatrix
+from util import sliceEquations, parseFloats, matrixToVector, load, cloneMatrix, save
 
 plt.rc('text', usetex=True)
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
@@ -70,6 +70,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         number_group.addButton(self.textAreaRadio)
         number_group.addButton(self.fileRadio)
 
+        self.exportButton.setDisabled(True)
+        self.exportButton.clicked.connect(self.openSaveFileDialog)
         self.loadFileButton.setDisabled(True)
         self.loadFileButton.clicked.connect(self.openLoadFileDialog)
         self.fileRadio.toggled.connect(self.handleRadioButtons)
@@ -119,6 +121,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                                                                                       eps=float(
                                                                                           self.epsField.text() if self.epsField.text() else 0.00001)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
+        self.exportButton.setDisabled(len(self.tempResultSets) == 0)
 
     @QtCore.pyqtSlot()
     def handleMethodsButton(self):
@@ -150,6 +153,13 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         except (SympifyError, ValueError) as e:
             print e
         self.figure.canvas.draw()
+
+    @QtCore.pyqtSlot()
+    def openSaveFileDialog(self):
+        fname = QtGui.QFileDialog.getSaveFileName(self, 'Save equation',
+                                                  '', "All (*.*)")
+        if fname:
+            save(fname, self.tempResultSets)
 
     @QtCore.pyqtSlot()
     def openLoadFileDialog(self):

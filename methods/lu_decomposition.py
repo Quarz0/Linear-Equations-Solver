@@ -6,7 +6,7 @@ from util import *
 
 
 def lu_decomposition(A, B, variables=None, iterations=50, eps=0.0000):
-    tempA, tempB = A, B
+    tempA, tempB = cloneMatrix(A), cloneMatrix(B)
     B = matrixToVector(B)
     n = len(B)
     o = [i for i in xrange(n)]

@@ -7,6 +7,7 @@ fileRadio
 matrixInputArea
 loadFileButton
 
+exportButton
 solveButton
 methodsButton
 variablesComboBox
