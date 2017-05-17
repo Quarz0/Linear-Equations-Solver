@@ -19,7 +19,7 @@ def gauss_elimination(A, B, variables=None, iterations=50, eps=0.0000):
 
     tables = {}
     for i in xrange(n):
-        tables[variables[i]] = Table(str(variables[i]), ['Step', variables[i], 'Abs. Error'], [1, X[i], '-'])
+        tables[variables[i]] = Table(str(variables[i]), ['Step', variables[i], 'Abs. Error'], [[1, X[i], '-']])
 
     return ResultSet(tempA, tempB, variables, 'Gauss-Elimination', tables, vectorToMatrix(X),
                      calcPrecision([0 for i in xrange(n)], variables), executionTime, 1)

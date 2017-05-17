@@ -1,6 +1,6 @@
 class ResultSet(object):
     def __init__(self, matrixA=None, matrixB=None, variables=None, name=None, tables=None, solution=None,
-                 precisions=None, time=None, iters=None, roots=[]):
+                 precisions=None, time=None, iters=None, roots={}):
         self.matrixA = matrixA
         self.matrixB = matrixB
         self.variables = variables
