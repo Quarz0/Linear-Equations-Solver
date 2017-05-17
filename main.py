@@ -10,7 +10,7 @@ from sympy.core.sympify import SympifyError
 
 from methods_options import Ui_Dialog
 from resultset import ResultSet
-from util import sliceEquations, parseFloats, matrixToVector, load
+from util import sliceEquations, parseFloats, matrixToVector, load, cloneMatrix
 
 plt.rc('text', usetex=True)
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
@@ -101,7 +101,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                 method = str(key.objectName())
                 if method == 'gauss_seidel':
                     self.drawResultSet(
-                        getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
+                        getattr(importlib.import_module('methods.' + method), method)(cloneMatrix(self.tempFloatA),
+                                                                                      cloneMatrix(self.tempFloatB),
                                                                                       self.initialGaussSeidel,
                                                                                       variables=matrixToVector(vars),
                                                                                       iterations=int(
@@ -110,7 +111,8 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                                                                                           self.epsField.text() if self.epsField.text() else 0.00001)))
                 else:
                     self.drawResultSet(
-                        getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
+                        getattr(importlib.import_module('methods.' + method), method)(cloneMatrix(self.tempFloatA),
+                                                                                      cloneMatrix(self.tempFloatB),
                                                                                       variables=matrixToVector(vars),
                                                                                       iterations=int(
                                                                                           self.maxItersField.text() if self.maxItersField.text() else 50),
@@ -209,7 +211,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         item = str(self.variablesComboBox.itemText(index))
         self.clearPlots()
         for i in xrange(len(self.tempResultSets)):
-            if len(self.tempResultSets[i].getRoots().keys() != 0):
+            if len(self.tempResultSets[i].getRoots().keys()) != 0:
                 self.plotRoot(self.tempResultSets[i].getRoots()[item])
             table = self.tempResultSets[i].getTables()[item]
             qTable = self.tempTables[i]

@@ -183,3 +183,10 @@ def save(path, resultSets):
 
     with open(path, 'w') as file:
         json.dump(castJsonToString(data), file, indent=4, sort_keys=True)
+
+
+def cloneMatrix(matrix):
+    clonedMatrix = []
+    for row in matrix:
+        clonedMatrix.append(row[:])
+    return clonedMatrix
