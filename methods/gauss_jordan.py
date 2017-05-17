@@ -1,7 +1,8 @@
 import timeit
-from util import *
-from table import Table
+
 from resultset import ResultSet
+from table import Table
+from util import *
 
 
 def gauss_jordan(A, B, variables=None, iterations=50, eps=0.0000):

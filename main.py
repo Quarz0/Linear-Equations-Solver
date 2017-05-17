@@ -90,10 +90,15 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
                 method = str(key.objectName())
-                self.drawResultSet(
-                    getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
-                                                                                  self.initialGaussSeidel,
-                                                                                  variables=matrixToVector(vars)))
+                if method == 'gauss_seidel':
+                    self.drawResultSet(
+                        getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
+                                                                                      self.initialGaussSeidel,
+                                                                                      variables=matrixToVector(vars)))
+                else:
+                    self.drawResultSet(
+                        getattr(importlib.import_module('methods.' + method), method)(self.tempFloatA, self.tempFloatB,
+                                                                                      variables=matrixToVector(vars)))
         self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
 
     @QtCore.pyqtSlot()
@@ -168,18 +173,18 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
                 try:
                     parseFloats(A)
                     parseFloats(B)
-                    lis = val[0].split(',')
-                    for i in xrange(len(lis)):
-                        if not lis[i]:
-                            lis[i] = 0.0
-                        else:
-                            lis[i] = float(lis[i])
-                    self.initialGaussSeidel = lis[:]
-                    validInputs = True and (len(lis) == len(vars)) and (len(vars) <= len(A))
+                    lis = []
+                    if len(val) != 0:
+                        lis = val[0].split(',')
+                        for i in xrange(len(lis)):
+                            if not lis[i]:
+                                lis[i] = 0.0
+                            else:
+                                lis[i] = float(lis[i])
+                        self.initialGaussSeidel = lis[:]
+                    validInputs = True and (len(lis) == 0 or len(lis) == len(vars)) and (len(vars) <= len(A))
                 except:
                     validInputs = False
-                break
-
         self.solveButton.setEnabled(validInputs and chosenMethod)
 
     @QtCore.pyqtSlot(int)
