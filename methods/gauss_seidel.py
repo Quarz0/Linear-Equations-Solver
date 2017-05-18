@@ -25,7 +25,7 @@ def gauss_seidel(A, B, X0, variables=None, iterations=50, eps=0.00001):
 
     startTime = timeit.default_timer()
 
-    for t in xrange(iterations-1):
+    for t in xrange(iterations - 1):
         max_ea = -1
         for i in xrange(n):
             sum1 = sum([A[i][k] * X_new[k] for k in xrange(0, i)])
