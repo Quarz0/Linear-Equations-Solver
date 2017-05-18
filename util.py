@@ -138,7 +138,7 @@ def castMatrixToString(matrix):
         for num in row:
             temp += ', ' + str(num)
         string += temp[2:] + '\n'
-    return string
+    return string[:-1]
 
 
 def load(path, mainWindow, optionsWindow):
@@ -171,7 +171,6 @@ def save(path, resultSets):
     data = {'A': resultSets[0].getMatrixA(), 'B': resultSets[0].getMatrixB(), 'Variables': resultSets[0].getVariables()}
     for resultSet in resultSets:
         data[resultSet.getName()] = {'Solution': resultSet.getSolution(),
-                                     'Root': resultSet.getRoot(),
                                      'Number of iterations': resultSet.getNumberOfIterations(),
                                      'Precisions': resultSet.getPrecisions(),
                                      'Execution Time': resultSet.getExecutionTime()}
