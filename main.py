@@ -46,6 +46,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
+        self.setWindowTitle("Linear-Equation-Solver by M&H")
         self.figs = [(Figure(), [self.rootPlot, self.mplvl3, self.mplwindow3])]
         self.init_Figure()
 
@@ -92,6 +93,7 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def solveEquations(self):
         self.clearAll()
+        errs = ''
         ((A, vars), B) = sliceEquations(str(self.matrixInputArea.toPlainText()))
         self.tempFloatA = parseFloats(A)
         self.tempFloatB = parseFloats(B)
@@ -99,26 +101,37 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
                 method = str(key.objectName())
-                if method == 'gauss_seidel':
-                    self.drawResultSet(
-                        getattr(importlib.import_module('methods.' + method), method)(cloneMatrix(self.tempFloatA),
-                                                                                      cloneMatrix(self.tempFloatB),
-                                                                                      self.initialGaussSeidel,
-                                                                                      variables=matrixToVector(vars),
-                                                                                      iterations=int(
-                                                                                          self.maxItersField.text() if self.maxItersField.text() else 50),
-                                                                                      eps=float(
-                                                                                          self.epsField.text() if self.epsField.text() else 0.00001)))
-                else:
-                    self.drawResultSet(
-                        getattr(importlib.import_module('methods.' + method), method)(cloneMatrix(self.tempFloatA),
-                                                                                      cloneMatrix(self.tempFloatB),
-                                                                                      variables=matrixToVector(vars),
-                                                                                      iterations=int(
-                                                                                          self.maxItersField.text() if self.maxItersField.text() else 50),
-                                                                                      eps=float(
-                                                                                          self.epsField.text() if self.epsField.text() else 0.00001)))
-        self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
+                try:
+                    if method == 'gauss_seidel':
+                        self.drawResultSet(
+                            getattr(importlib.import_module('methods.' + method), method)(cloneMatrix(self.tempFloatA),
+                                                                                          cloneMatrix(self.tempFloatB),
+                                                                                          self.initialGaussSeidel,
+                                                                                          variables=matrixToVector(
+                                                                                              vars),
+                                                                                          iterations=int(
+                                                                                              self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                          eps=float(
+                                                                                              self.epsField.text() if self.epsField.text() else 0.00001)))
+                    else:
+                        self.drawResultSet(
+                            getattr(importlib.import_module('methods.' + method), method)(cloneMatrix(self.tempFloatA),
+                                                                                          cloneMatrix(self.tempFloatB),
+                                                                                          variables=matrixToVector(
+                                                                                              vars),
+                                                                                          iterations=int(
+                                                                                              self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                          eps=float(
+                                                                                              self.epsField.text() if self.epsField.text() else 0.00001)))
+                except:
+                    if not errs:
+                        errs += method
+                    else:
+                        errs += ', ' + method
+        if errs:
+            self.showErrorMessage(errs + '.')
+        if len(self.tempResultSets) != 0:
+            self.variablesComboBox.addItems([vars[i][0] for i in xrange(len(vars))])
 
     @QtCore.pyqtSlot()
     def handleMethodsButton(self):
@@ -377,6 +390,17 @@ class MyApp(QtGui.QMainWindow, Ui_MainWindow):
             root.append(r)
             its.append(i)
         self.rootPlot.plot(its, root, c=np.random.rand(3, 1))
+
+    def showErrorMessage(self, error):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Critical)
+
+        msg.setText("Evaluation failure")
+        msg.setInformativeText("An error occurred while trying to evaluate the root(s)")
+        msg.setWindowTitle("Error!")
+        msg.setDetailedText('A division by zero occured in the following method(s):\n' + error)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        msg.exec_()
 
 
 if __name__ == "__main__":
